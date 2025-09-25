@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "PhotoTidy (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "PhotoTidy (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
