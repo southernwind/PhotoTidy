@@ -1,37 +1,38 @@
 # AGENTS
 
-## Project Description
+## プロジェクト概要 (Project Description)
 
-This project is a personal tool designed for image cleanup.  
-The purpose is **not to categorize or tag images**, but to quickly go through collections and **remove unnecessary files**.  
-The remaining images become easier to manage as a result.
+本プロジェクトは画像整理（不要画像のクリーンアップ）を目的とした個人用ツールです。  
+目的は **画像をカテゴリ分けしたりタグ付けしたりすることではなく**、コレクションを素早く確認して **不要ファイルを削除する** ことです。  
+不要な画像を取り除くことで、残った画像の管理が容易になります。
 
-### Architectural Principles (MVVM)
+### アーキテクチャ原則 (MVVM)
 
-The application follows the **MVVM (Model-View-ViewModel) pattern**:
+本アプリケーションは **MVVM (Model-View-ViewModel) パターン** に従います。
 
 - **Model**
 
-  - Represents image entities and file system operations.
-  - Responsible for providing access to metadata, thumbnails, and file deletion logic.
-  - Independent from UI concerns.
+  - 画像エンティティおよびファイルシステム操作を表現します。
+  - メタデータ取得、サムネイル生成、削除ロジックなどを提供します。
+  - UI には依存しません。
 
 - **View**
 
-  - Displays images and user controls for marking files as "keep" or "delete."
-  - Keeps UI responsive and focuses solely on presentation.
-  - Has no business logic.
+  - 画像および「保持 / 削除」用 UI コントロールを表示します。
+  - 応答性の高い表示に専念し、見た目以外のロジックを持ちません。
+  - ビジネスロジックは含みません。
 
 - **ViewModel**
-  - Acts as a mediator between the View and the Model.
-  - Holds the current image collection state and deletion candidates.
-  - Exposes commands (e.g., `MarkForDeletion`, `ConfirmDeletion`) to the View.
-  - Ensures that the View is testable and decoupled from the file system.
+  - View と Model の仲介を行います。
+  - 現在の画像コレクション状態や削除候補を保持します。
+  - `MarkForDeletion` や `ConfirmDeletion` などのコマンドを公開します。
+  - View をファイルシステムから切り離し、テスト容易性を確保します。
 
-This separation makes it easier to **maintain, extend, and test** the application over time.
+この分離により、**保守・拡張・テスト** が容易になります。
 
-## Guidelines
+## ガイドライン (Guidelines)
 
-- Always add documentation comments to classes, methods, and properties, even without explicit instructions.
-- Do not add other comments unless explicitly instructed.
-- Follow the `.editorconfig` settings.
+- すべてのクラス / メソッド / プロパティに XML ドキュメントコメントを必ず付与すること。
+- XML ドキュメントコメントは必ず日本語で記述すること。
+- 明示的な指示がない限り、その他のコメントは追加しないこと。
+- `.editorconfig` の設定に従うこと。
