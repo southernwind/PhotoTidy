@@ -38,7 +38,7 @@
             </GridView.ItemsPanel>
             <GridView.ItemTemplate>
                 <DataTemplate x:DataType="vm:ImageItemViewModel">
-                    <StackPanel Width="160" Margin="4">
+                    <StackPanel Width="160" Margin="4" DoubleTapped="ImageItem_DoubleTapped">
                         <Border CornerRadius="4" BorderBrush="#33000000" BorderThickness="1">
                             <Image Source="{x:Bind Thumbnail.Value, Mode=OneWay}" Stretch="UniformToFill" Width="160" Height="110"/>
                         </Border>

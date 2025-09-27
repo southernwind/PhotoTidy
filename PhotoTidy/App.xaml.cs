@@ -5,19 +5,32 @@ using Microsoft.UI.Xaml;
 
 namespace PhotoTidy;
 
-public partial class App {
+/// <summary>
+///     アプリケーションのエントリポイントを表します。
+/// </summary>
+public partial class App : Application {
 	private static Window? _mainWindow;
 
+	/// <summary>
+	///     メインウィンドウインスタンスを取得します。
+	/// </summary>
 	public static Window MainWindow {
 		get {
 			return _mainWindow ??= Ioc.Default.GetRequiredService<MainWindow>();
 		}
 	}
 
+	/// <summary>
+	///     <see cref="App"/> の新しいインスタンスを初期化します。
+	/// </summary>
 	public App() {
 		this.InitializeComponent();
 	}
 
+	/// <summary>
+	///     アプリ起動時に呼び出されます。
+	/// </summary>
+	/// <param name="args">起動引数。</param>
 	protected override void OnLaunched(LaunchActivatedEventArgs args) {
 		Build();
 

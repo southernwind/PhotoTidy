@@ -1,9 +1,9 @@
 using Microsoft.UI.Xaml.Input;
-using PhotoTidy.Services;
 using PhotoTidy.ViewModels;
 using Windows.System;
-using Microsoft.WindowsAppSDK.Runtime.Packages;
-using WinRT.Interop;
+using Microsoft.UI.Xaml;
+using CommunityToolkit.Mvvm.DependencyInjection;
+using PhotoTidy.Views;
 
 namespace PhotoTidy {
 	/// <summary>
@@ -30,12 +30,24 @@ namespace PhotoTidy {
 		/// <summary>
 		///     フォルダ入力テキストボックスで Enter キーが押下されたときに画像読み込みコマンドを実行します。
 		/// </summary>
-		/// <param name="sender">イベント送信元。</param>
+		/// <param name="_">イベント送信元。</param>
 		/// <param name="e">キーイベントデータ。</param>
-		private void FolderTextBox_KeyDown(object sender, KeyRoutedEventArgs e) {
+		private void FolderTextBox_KeyDown(object _, KeyRoutedEventArgs e) {
 			if (e.Key == VirtualKey.Enter && this.ViewModel.LoadCommand.CanExecute()) {
 				this.ViewModel.LoadCommand.Execute(Unit.Default);
 			}
+		}
+
+		/// <summary>
+		///     画像アイテムのダブルタップで拡大プレビューウィンドウを開きます。
+		/// </summary>
+		private void ImageItem_DoubleTapped(object sender, DoubleTappedRoutedEventArgs _) {
+			if (sender is not FrameworkElement { DataContext: ImageItemViewModel vm }) {
+				return;
+			}
+
+			var previewWindow = new ImagePreviewWindow(vm);
+			previewWindow.Activate();
 		}
 	}
 }
