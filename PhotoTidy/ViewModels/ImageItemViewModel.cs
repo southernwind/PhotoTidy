@@ -1,0 +1,28 @@
+using Microsoft.UI.Xaml.Media.Imaging;
+using PhotoTidy.Models;
+
+namespace PhotoTidy.ViewModels;
+
+[AddTransient]
+public class ImageItemViewModel(ImageItem imageItem) {
+	/// <summary>
+	///     画像ファイルの絶対パスを取得します。
+	/// </summary>
+	public BindableReactiveProperty<string> FilePath {
+		get;
+	} = imageItem.FilePath.ToBindableReactiveProperty();
+
+	/// <summary>
+	///     パスを除いたファイル名を取得します。
+	/// </summary>
+	public IReadOnlyBindableReactiveProperty<string> FileName {
+		get;
+	} = imageItem.FileName.ToBindableReactiveProperty();
+
+	/// <summary>
+	///     読み込まれたサムネイルを取得します。読み込み前は null です。
+	/// </summary>
+	public BindableReactiveProperty<BitmapImage?> Thumbnail {
+		get;
+	} = imageItem.Thumbnail.ToBindableReactiveProperty();
+}
