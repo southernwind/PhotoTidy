@@ -46,7 +46,12 @@
                 <DataTemplate x:DataType="vm:ImageItemViewModel">
                     <StackPanel Width="160" Margin="4" DoubleTapped="ImageItem_DoubleTapped">
                         <Border CornerRadius="4" BorderBrush="#33000000" BorderThickness="1">
-                            <Image Source="{x:Bind Thumbnail.Value, Mode=OneWay}" Stretch="UniformToFill" Width="160" Height="110" />
+                            <Grid>
+                                <Image Source="{x:Bind Thumbnail.Value, Mode=OneWay}" Stretch="UniformToFill" Width="160" Height="110" />
+                                <Border x:Name="TagBadge" x:Load="{x:Bind IsTagged.Value}" Background="#AA000000" Padding="4" HorizontalAlignment="Right" VerticalAlignment="Top" CornerRadius="0,0,0,4">
+                                    <TextBlock Text="{x:Bind TagName.Value}" Foreground="White" FontSize="10"/>
+                                </Border>
+                            </Grid>
                         </Border>
                         <TextBlock TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" FontSize="12" Margin="0,4,0,0" Text="{x:Bind FileName.Value}" />
                     </StackPanel>

@@ -5,6 +5,10 @@ namespace PhotoTidy.ViewModels;
 
 [AddTransient]
 public class ImageItemViewModel(ImageItem imageItem) {
+	public ImageItem ImageItem {
+		get;
+	} = imageItem;
+
 	/// <summary>
 	///     画像ファイルの絶対パスを取得します。
 	/// </summary>
@@ -25,4 +29,11 @@ public class ImageItemViewModel(ImageItem imageItem) {
 	public BindableReactiveProperty<BitmapImage?> Thumbnail {
 		get;
 	} = imageItem.Thumbnail.ToBindableReactiveProperty();
+
+	/// <summary>
+	///     画像に付与されたタグ。
+	/// </summary>
+	public BindableReactiveProperty<TagInfo?> Tag {
+		get;
+	} = imageItem.Tag.ToBindableReactiveProperty();
 }

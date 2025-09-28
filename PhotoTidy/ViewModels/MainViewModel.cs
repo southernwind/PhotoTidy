@@ -8,14 +8,11 @@ namespace PhotoTidy.ViewModels;
 /// </summary>
 [AddSingleton]
 public sealed class MainViewModel {
-	private readonly ImageList _imageList;
-
 	/// <summary>
 	///     <see cref="MainViewModel" /> クラスの新しいインスタンスを初期化します。
 	/// </summary>
 	/// <param name="imageList">イメージリストモデル</param>
 	public MainViewModel(ImageList imageList) {
-		this._imageList = imageList;
 		this.Images = imageList.Images.ToNotifyCollectionChanged(x => new ImageItemViewModel(x));
 		this.FolderPath = imageList.FolderPath.ToBindableReactiveProperty();
 		this.Status = imageList.Status.ToBindableReactiveProperty();

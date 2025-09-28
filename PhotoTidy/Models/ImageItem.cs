@@ -42,6 +42,13 @@ public sealed class ImageItem {
 	} = new();
 
 	/// <summary>
+	///     画像に付与されたタグ (ショートカット操作で設定)。
+	/// </summary>
+	public ReactiveProperty<TagInfo?> Tag {
+		get;
+	} = new();
+
+	/// <summary>
 	///     サムネイルを非同期で読み込みます (一度のみ)。
 	/// </summary>
 	/// <returns>非同期操作を表すタスク。</returns>

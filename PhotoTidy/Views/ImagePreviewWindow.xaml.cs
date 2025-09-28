@@ -1,4 +1,3 @@
-using Windows.System;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Input;
@@ -21,6 +20,7 @@ public sealed partial class ImagePreviewWindow {
 		this.InitializeComponent();
 		this.TrySetSize();
 		this.RootGrid.Loaded += (_, _) => this.RootGrid.Focus(FocusState.Programmatic);
+		this.RootGrid.KeyDown += this.RootGrid_KeyDown;
 	}
 
 	/// <summary>
@@ -35,10 +35,6 @@ public sealed partial class ImagePreviewWindow {
 	}
 
 	private void RootGrid_KeyDown(object sender, KeyRoutedEventArgs e) {
-		if (e.Key is VirtualKey.Right) {
-			this.ViewModel.MoveNext();
-		} else if (e.Key is VirtualKey.Left) {
-			this.ViewModel.MovePrevious();
-		}
+		this.ViewModel.ShortcutKeyCommand.Execute(e.Key);
 	}
 }
