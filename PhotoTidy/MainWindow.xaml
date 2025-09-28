@@ -30,7 +30,13 @@
         </StackPanel>
 
         <!-- Image list -->
-        <GridView x:Name="ImagesGrid" Grid.Row="1" IsItemClickEnabled="True" SelectionMode="None" ItemsSource="{x:Bind ViewModel.Images}">
+        <GridView
+            x:Name="ImagesGrid"
+            Grid.Row="1"
+            IsItemClickEnabled="True"
+            SelectionMode="Single"
+            ItemsSource="{x:Bind ViewModel.Images}"
+            SelectedIndex="{x:Bind ViewModel.SelectedIndex.Value, Mode=TwoWay}">
             <GridView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <ItemsWrapGrid MaximumRowsOrColumns="0" Orientation="Horizontal"/>
@@ -40,9 +46,9 @@
                 <DataTemplate x:DataType="vm:ImageItemViewModel">
                     <StackPanel Width="160" Margin="4" DoubleTapped="ImageItem_DoubleTapped">
                         <Border CornerRadius="4" BorderBrush="#33000000" BorderThickness="1">
-                            <Image Source="{x:Bind Thumbnail.Value, Mode=OneWay}" Stretch="UniformToFill" Width="160" Height="110"/>
+                            <Image Source="{x:Bind Thumbnail.Value, Mode=OneWay}" Stretch="UniformToFill" Width="160" Height="110" />
                         </Border>
-                        <TextBlock TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" FontSize="12" Margin="0,4,0,0" Text="{x:Bind FileName.Value}"/>
+                        <TextBlock TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" FontSize="12" Margin="0,4,0,0" Text="{x:Bind FileName.Value}" />
                     </StackPanel>
                 </DataTemplate>
             </GridView.ItemTemplate>

@@ -4,7 +4,7 @@ using PhotoTidy.Services;
 
 namespace PhotoTidy.Models;
 
-[AddTransient]
+[AddSingleton]
 public class ImageList {
 	private static readonly string[] ImageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tif", ".tiff", ".webp"];
 	private readonly IFolderPickerService _folderPickerService;
@@ -15,6 +15,10 @@ public class ImageList {
 	/// <param name="folderPickerService">フォルダ選択サービス。</param>
 	public ImageList(IFolderPickerService folderPickerService) {
 		this._folderPickerService = folderPickerService;
+		// 選択画像の派生プロパティ
+		this.SelectedImage = this.SelectedIndex
+			.Select(i => i >= 0 && i < this.Images.Count ? this.Images[i] : null)
+			.ToReadOnlyReactiveProperty();
 	}
 
 	/// <summary>
@@ -44,6 +48,20 @@ public class ImageList {
 	public ReactiveProperty<bool> IsBusy {
 		get;
 	} = new();
+
+	/// <summary>
+	///     選択中の画像インデックス (-1 は未選択)。
+	/// </summary>
+	public ReactiveProperty<int> SelectedIndex {
+		get;
+	} = new(-1);
+
+	/// <summary>
+	///     選択中の画像。
+	/// </summary>
+	public ReadOnlyReactiveProperty<ImageItem?> SelectedImage {
+		get;
+	}
 
 	public async Task BrowseAsync() {
 		var path = await this._folderPickerService.PickFolderAsync();
@@ -75,10 +93,29 @@ public class ImageList {
 			}
 
 			this.Status.Value = $"{this.Images.Count} 件";
+			this.SelectedIndex.Value = this.Images.Count > 0 ? 0 : -1;
 		} catch (Exception ex) {
 			this.Status.Value = "エラー: " + ex.Message;
 		} finally {
 			this.IsBusy.Value = false;
 		}
+	}
+
+	public void MoveNext() {
+		if (this.Images.Count == 0) {
+			return;
+		}
+
+		var next = (this.SelectedIndex.Value + 1) % this.Images.Count;
+		this.SelectedIndex.Value = next;
+	}
+
+	public void MovePrevious() {
+		if (this.Images.Count == 0) {
+			return;
+		}
+
+		var prev = (this.SelectedIndex.Value - 1 + this.Images.Count) % this.Images.Count;
+		this.SelectedIndex.Value = prev;
 	}
 }

@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using System.IO;
 using PhotoTidy.Models;
 
@@ -9,18 +8,26 @@ namespace PhotoTidy.ViewModels;
 /// </summary>
 [AddSingleton]
 public sealed class MainViewModel {
+	private readonly ImageList _imageList;
+
 	/// <summary>
 	///     <see cref="MainViewModel" /> クラスの新しいインスタンスを初期化します。
 	/// </summary>
 	/// <param name="imageList">イメージリストモデル</param>
 	public MainViewModel(ImageList imageList) {
+		this._imageList = imageList;
 		this.Images = imageList.Images.ToNotifyCollectionChanged(x => new ImageItemViewModel(x));
 		this.FolderPath = imageList.FolderPath.ToBindableReactiveProperty();
 		this.Status = imageList.Status.ToBindableReactiveProperty();
 		this.IsBusy = imageList.IsBusy.ToBindableReactiveProperty();
+		this.SelectedIndex = imageList.SelectedIndex.ToBindableReactiveProperty();
+		this.SelectedImage = imageList.SelectedImage.Select(i => i != null ? new ImageItemViewModel(i) : null).ToReadOnlyBindableReactiveProperty();
 		this.BrowseCommand.Subscribe(async _ => await imageList.BrowseAsync());
 		this.LoadCommand = this.IsBusy.CombineLatest(this.FolderPath, (isBusy, folderPath) => (isBusy, folderPath)).Select(x => !x.isBusy && Directory.Exists(x.folderPath ?? string.Empty)).ToReactiveCommand();
 		this.LoadCommand.Subscribe(_ => imageList.Load());
+		this.SelectedIndex.Subscribe(x => {
+			imageList.SelectedIndex.Value = x;
+		});
 	}
 
 	/// <summary>
@@ -62,6 +69,20 @@ public sealed class MainViewModel {
 	///     画像読み込みコマンドを取得します。
 	/// </summary>
 	public ReactiveCommand LoadCommand {
+		get;
+	}
+
+	/// <summary>
+	///     現在選択されている画像アイテムのインデックスを取得または設定します。
+	/// </summary>
+	public BindableReactiveProperty<int> SelectedIndex {
+		get;
+	}
+
+	/// <summary>
+	///     現在選択されている画像アイテムを取得します。
+	/// </summary>
+	public IReadOnlyBindableReactiveProperty<ImageItemViewModel?> SelectedImage {
 		get;
 	}
 }

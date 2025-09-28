@@ -7,10 +7,10 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Title="{x:Bind ViewModel.FileName.Value, Mode=OneWay}">
-    <Grid Background="Black">
+    Title="{x:Bind ViewModel.SelectedImage.Value.FileName.Value, Mode=OneWay}">
+    <Grid x:Name="RootGrid" Background="Black" KeyDown="RootGrid_KeyDown" IsTabStop="True">
         <Image x:Name="PreviewImage"
-               Source="{x:Bind ViewModel.Thumbnail.Value, Mode=OneWay}"
+               Source="{x:Bind ViewModel.SelectedImage.Value.Thumbnail.Value, Mode=OneWay}"
                Stretch="Uniform"
                HorizontalAlignment="Center"
                VerticalAlignment="Center"

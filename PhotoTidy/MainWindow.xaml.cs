@@ -1,8 +1,7 @@
+using Windows.System;
+using CommunityToolkit.Mvvm.DependencyInjection;
 using Microsoft.UI.Xaml.Input;
 using PhotoTidy.ViewModels;
-using Windows.System;
-using Microsoft.UI.Xaml;
-using CommunityToolkit.Mvvm.DependencyInjection;
 using PhotoTidy.Views;
 
 namespace PhotoTidy {
@@ -12,19 +11,19 @@ namespace PhotoTidy {
 	[AddSingleton]
 	public sealed partial class MainWindow {
 		/// <summary>
-		///     このウィンドウに関連付けられたビュー モデルを取得します。
-		/// </summary>
-		public MainViewModel ViewModel {
-			get;
-		}
-
-		/// <summary>
 		///     <see cref="MainWindow" /> クラスの新しいインスタンスを初期化します。
 		/// </summary>
 		public MainWindow(MainViewModel mainViewModel) {
 			this.InitializeComponent();
 			this.ViewModel = mainViewModel;
 			this.RootGrid.DataContext = this.ViewModel;
+		}
+
+		/// <summary>
+		///     このウィンドウに関連付けられたビュー モデルを取得します。
+		/// </summary>
+		public MainViewModel ViewModel {
+			get;
 		}
 
 		/// <summary>
@@ -42,11 +41,7 @@ namespace PhotoTidy {
 		///     画像アイテムのダブルタップで拡大プレビューウィンドウを開きます。
 		/// </summary>
 		private void ImageItem_DoubleTapped(object sender, DoubleTappedRoutedEventArgs _) {
-			if (sender is not FrameworkElement { DataContext: ImageItemViewModel vm }) {
-				return;
-			}
-
-			var previewWindow = new ImagePreviewWindow(vm);
+			var previewWindow = Ioc.Default.GetRequiredService<ImagePreviewWindow>();
 			previewWindow.Activate();
 		}
 	}
