@@ -1,6 +1,7 @@
 using Windows.System;
 using PhotoTidy.Models;
 using PhotoTidy.Services;
+using Microsoft.UI.Xaml; // Added for Visibility
 
 namespace PhotoTidy.ViewModels;
 
@@ -29,6 +30,16 @@ public class ImagePreviewViewModel {
 					break;
 			}
 		});
+		this.NextImage = imageList.NextImage.Select(x => x == null ? null : new ImageItemViewModel(x)).ToBindableReactiveProperty();
+		this.PreviousImage = imageList.PreviousImage.Select(x => x == null ? null : new ImageItemViewModel(x)).ToBindableReactiveProperty();
+
+		// Visibility projections
+		this.NextImageVisibility = imageList.NextImage
+			.Select(x => x == null ? Visibility.Collapsed : Visibility.Visible)
+			.ToBindableReactiveProperty();
+		this.PreviousImageVisibility = imageList.PreviousImage
+			.Select(x => x == null ? Visibility.Collapsed : Visibility.Visible)
+			.ToBindableReactiveProperty();
 	}
 
 	/// <summary>
@@ -42,6 +53,34 @@ public class ImagePreviewViewModel {
 	///     現在選択されている画像アイテムを取得します。
 	/// </summary>
 	public IReadOnlyBindableReactiveProperty<ImageItemViewModel?> SelectedImage {
+		get;
+	}
+
+	/// <summary>
+	///     次に表示する画像アイテムを取得します。
+	/// </summary>
+	public IReadOnlyBindableReactiveProperty<ImageItemViewModel?> NextImage {
+		get;
+	}
+
+	/// <summary>
+	///     前に表示する画像アイテムを取得します。
+	/// </summary>
+	public IReadOnlyBindableReactiveProperty<ImageItemViewModel?> PreviousImage {
+		get;
+	}
+
+	/// <summary>
+	/// 次の画像のVisibility
+	/// </summary>
+	public IReadOnlyBindableReactiveProperty<Visibility> NextImageVisibility {
+		get;
+	}
+
+	/// <summary>
+	/// 前の画像のVisibility
+	/// </summary>
+	public IReadOnlyBindableReactiveProperty<Visibility> PreviousImageVisibility {
 		get;
 	}
 

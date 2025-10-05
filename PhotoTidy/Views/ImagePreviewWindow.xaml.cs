@@ -18,6 +18,7 @@ public sealed partial class ImagePreviewWindow {
 	public ImagePreviewWindow(ImagePreviewViewModel viewModel) {
 		this.ViewModel = viewModel;
 		this.InitializeComponent();
+		this.RootGrid.DataContext = this.ViewModel; // Enable classic Binding for converter usage
 		this.TrySetSize();
 		this.RootGrid.Loaded += (_, _) => this.RootGrid.Focus(FocusState.Programmatic);
 	}

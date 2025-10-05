@@ -23,6 +23,22 @@ public class ImageList {
 		this.SelectedImage = this.SelectedIndex
 			.Select(i => i >= 0 && i < this.Images.Count ? this.Images[i] : null)
 			.ToReadOnlyReactiveProperty();
+		// 前の画像
+		this.PreviousImage = this.SelectedIndex
+			.CombineLatest(this.Images.ObserveCountChanged(), (i, c) => i)
+			.Select(i => {
+				var prev = i - 1;
+				return prev >= 0 && prev < this.Images.Count ? this.Images[prev] : null;
+			})
+			.ToReadOnlyReactiveProperty();
+		// 次の画像
+		this.NextImage = this.SelectedIndex
+			.CombineLatest(this.Images.ObserveCountChanged(), (i, c) => i)
+			.Select(i => {
+				var next = i + 1;
+				return next >= 0 && next < this.Images.Count ? this.Images[next] : null;
+			})
+			.ToReadOnlyReactiveProperty();
 	}
 
 	/// <summary>
@@ -64,6 +80,20 @@ public class ImageList {
 	///     選択中の画像。
 	/// </summary>
 	public ReadOnlyReactiveProperty<ImageItem?> SelectedImage {
+		get;
+	}
+
+	/// <summary>
+	///     選択中の画像の1つ前の画像 (存在しなければ null)。
+	/// </summary>
+	public ReadOnlyReactiveProperty<ImageItem?> PreviousImage {
+		get;
+	}
+
+	/// <summary>
+	///     選択中の画像の1つ後の画像 (存在しなければ null)。
+	/// </summary>
+	public ReadOnlyReactiveProperty<ImageItem?> NextImage {
 		get;
 	}
 

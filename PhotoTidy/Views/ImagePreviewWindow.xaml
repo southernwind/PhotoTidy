@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <Window
     x:Class="PhotoTidy.Views.ImagePreviewWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -17,6 +16,18 @@
                AutomationProperties.Name="プレビュー画像"/>
         <Border x:Name="TagBadge" Background="#AA000000" Padding="4" HorizontalAlignment="Right" VerticalAlignment="Top" CornerRadius="0,0,0,4">
 	        <TextBlock Text="{x:Bind ViewModel.SelectedImage.Value.Tag.Value,Mode=OneWay}" Foreground="White" FontSize="16"/>
+        </Border>
+        <Border HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="8" Background="#66000000" CornerRadius="4" Padding="2"
+                Visibility="{x:Bind ViewModel.PreviousImageVisibility.Value, Mode=OneWay}">
+            <Image Width="120" Height="80"
+                   Stretch="UniformToFill"
+                   Source="{x:Bind ViewModel.PreviousImage.Value.Thumbnail.Value, Mode=OneWay}"/>
+        </Border>
+        <Border HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="8" Background="#66000000" CornerRadius="4" Padding="2"
+                Visibility="{x:Bind ViewModel.NextImageVisibility.Value, Mode=OneWay}">
+            <Image Width="120" Height="80"
+                   Stretch="UniformToFill"
+                   Source="{x:Bind ViewModel.NextImage.Value.Thumbnail.Value, Mode=OneWay}"/>
         </Border>
 	</Grid>
 </Window>
