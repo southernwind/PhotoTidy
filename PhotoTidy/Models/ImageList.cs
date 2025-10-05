@@ -8,6 +8,7 @@ namespace PhotoTidy.Models;
 public class ImageList {
 	private static readonly string[] ImageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tif", ".tiff", ".webp"];
 	private readonly IFolderPickerService _folderPickerService;
+	private FileSystemWatcher? _watcher;
 
 	/// <summary>
 	///     <see cref="ImageList" /> クラスの新しいインスタンスを初期化します。
@@ -15,7 +16,6 @@ public class ImageList {
 	/// <param name="folderPickerService">フォルダ選択サービス。</param>
 	public ImageList(IFolderPickerService folderPickerService) {
 		this._folderPickerService = folderPickerService;
-		// 選択画像の派生プロパティ
 		this.SelectedImage = this.SelectedIndex
 			.Select(i => i >= 0 && i < this.Images.Count ? this.Images[i] : null)
 			.ToReadOnlyReactiveProperty();
@@ -72,6 +72,8 @@ public class ImageList {
 	}
 
 	public void Load() {
+		this.DisposeWatcher();
+
 		if (string.IsNullOrWhiteSpace(this.FolderPath.Value) || !Directory.Exists(this.FolderPath.Value)) {
 			this.Status.Value = "無効なフォルダ";
 			return;
@@ -94,11 +96,60 @@ public class ImageList {
 
 			this.Status.Value = $"{this.Images.Count} 件";
 			this.SelectedIndex.Value = this.Images.Count > 0 ? 0 : -1;
+			this.SetupWatcher();
 		} catch (Exception ex) {
 			this.Status.Value = "エラー: " + ex.Message;
 		} finally {
 			this.IsBusy.Value = false;
 		}
+	}
+
+	private void SetupWatcher() {
+		try {
+			this._watcher = new(this.FolderPath.Value!) {
+				IncludeSubdirectories = false,
+				Filter = "*.*",
+				NotifyFilter = NotifyFilters.FileName | NotifyFilters.CreationTime
+			};
+			this._watcher.Created += this.OnFileCreated;
+			this._watcher.EnableRaisingEvents = true;
+		} catch {
+			// ignore watcher setup failures
+		}
+	}
+
+	private void DisposeWatcher() {
+		if (this._watcher != null) {
+			this._watcher.Created -= this.OnFileCreated;
+			this._watcher.Dispose();
+			this._watcher = null;
+		}
+	}
+
+	private void OnFileCreated(object? sender, FileSystemEventArgs e) {
+		if (!this.IsTargetImage(e.FullPath)) {
+			return;
+		}
+
+		// 既に存在する場合は無視
+		if (this.Images.Any(i => string.Equals(i.FilePath.Value, e.FullPath, StringComparison.OrdinalIgnoreCase))) {
+			return;
+		}
+
+		// これはスレッドセーフと見なされます
+		if (!File.Exists(e.FullPath)) {
+			return;
+		}
+
+		var item = new ImageItem(e.FullPath);
+		this.Images.Add(item);
+		_ = item.EnsureThumbnailAsync();
+		this.Status.Value = $"{this.Images.Count} 件";
+	}
+
+	private bool IsTargetImage(string path) {
+		var ext = Path.GetExtension(path);
+		return ImageExtensions.Any(x => string.Equals(x, ext, StringComparison.OrdinalIgnoreCase));
 	}
 
 	public void MoveNext() {
