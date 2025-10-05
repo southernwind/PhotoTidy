@@ -1,12 +1,12 @@
 using Windows.System;
 using CommunityToolkit.Mvvm.DependencyInjection;
-using Microsoft.UI.Xaml.Input;
-using PhotoTidy.ViewModels;
-using PhotoTidy.Views;
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
 using PhotoTidy.Models;
 using PhotoTidy.Services;
+using PhotoTidy.ViewModels;
+using PhotoTidy.Views;
 
 namespace PhotoTidy {
 	/// <summary>
@@ -24,8 +24,6 @@ namespace PhotoTidy {
 			this.ViewModel = mainViewModel;
 			this.PreviewViewModel = previewViewModel;
 			this._folderPickerService = folderPickerService;
-			this.RootGrid.DataContext = this.ViewModel;
-			this.RootGrid.KeyDown += this.RootGrid_KeyDown;
 			this.RootGrid.Loaded += (_, _) => this.RootGrid.Focus(FocusState.Programmatic);
 		}
 
@@ -59,11 +57,9 @@ namespace PhotoTidy {
 			previewWindow.Activate();
 		}
 
-		private void RootGrid_KeyDown(object sender, KeyRoutedEventArgs e) {
-			this.PreviewViewModel.ShortcutKeyCommand.Execute(e.Key);
+		private static bool IsModifier(VirtualKey key) {
+			return key is VirtualKey.Shift or VirtualKey.Control or VirtualKey.Menu or VirtualKey.LeftWindows or VirtualKey.RightWindows;
 		}
-
-		private static bool IsModifier(VirtualKey key) => key is VirtualKey.Shift or VirtualKey.Control or VirtualKey.Menu or VirtualKey.LeftWindows or VirtualKey.RightWindows;
 
 		private void TagKeyTextBox_KeyDown(object sender, KeyRoutedEventArgs e) {
 			if (sender is not TextBox tb || tb.DataContext is not TagInfo tag) {

@@ -20,7 +20,6 @@ public sealed partial class ImagePreviewWindow {
 		this.InitializeComponent();
 		this.TrySetSize();
 		this.RootGrid.Loaded += (_, _) => this.RootGrid.Focus(FocusState.Programmatic);
-		this.RootGrid.KeyDown += this.RootGrid_KeyDown;
 	}
 
 	/// <summary>

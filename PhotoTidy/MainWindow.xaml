@@ -73,7 +73,7 @@
                         <Border CornerRadius="4" BorderBrush="#33000000" BorderThickness="1">
                             <Grid>
                                 <Image Source="{x:Bind Thumbnail.Value, Mode=OneWay}" Stretch="UniformToFill" Width="160" Height="110" />
-                                <Border x:Name="TagBadge" x:Load="{x:Bind IsTagged.Value,Mode=OneWay}" Background="#AA000000" Padding="4" HorizontalAlignment="Right" VerticalAlignment="Top" CornerRadius="0,0,0,4">
+                                <Border x:Name="TagBadge" Background="#AA000000" Padding="4" HorizontalAlignment="Right" VerticalAlignment="Top" CornerRadius="0,0,0,4">
                                     <TextBlock Text="{x:Bind Tag.Value.Name.Value,Mode=OneWay}" Foreground="White" FontSize="16"/>
                                 </Border>
                             </Grid>
