@@ -106,11 +106,7 @@ public class ImageList {
 
 	private void SetupWatcher() {
 		try {
-			this._watcher = new(this.FolderPath.Value!) {
-				IncludeSubdirectories = false,
-				Filter = "*.*",
-				NotifyFilter = NotifyFilters.FileName | NotifyFilters.CreationTime
-			};
+			this._watcher = new(this.FolderPath.Value!) { IncludeSubdirectories = false, Filter = "*.*", NotifyFilter = NotifyFilters.FileName | NotifyFilters.CreationTime };
 			this._watcher.Created += this.OnFileCreated;
 			this._watcher.EnableRaisingEvents = true;
 		} catch {
@@ -168,5 +164,61 @@ public class ImageList {
 
 		var prev = (this.SelectedIndex.Value - 1 + this.Images.Count) % this.Images.Count;
 		this.SelectedIndex.Value = prev;
+	}
+
+	/// <summary>
+	///     指定タグが付与されている全ての画像をそのタグのターゲットフォルダへ移動します。
+	/// </summary>
+	public void MoveImagesByTag() {
+		try {
+			var targets = this.Images.Where(image => image.Tag.Value != null).ToList();
+			if (targets.Count == 0) {
+				return;
+			}
+
+			foreach (var img in targets) {
+				var srcPath = img.FilePath.Value;
+				if (!File.Exists(srcPath)) {
+					continue;
+				}
+
+				var tag = img.Tag.Value;
+				if (tag?.TargetFolder.Value == null) {
+					continue;
+				}
+
+				var destPath = Path.Combine(tag.TargetFolder.Value, Path.GetFileName(srcPath));
+
+				destPath = this.EnsureUnique(destPath);
+				try {
+					File.Move(srcPath, destPath);
+					img.FilePath.Value = destPath;
+				} catch (Exception exMove) {
+					// 個別失敗はスキップ (全体失敗ではない) ステータスに最後のエラー記録
+					this.Status.Value = "移動エラー: " + exMove.Message;
+				}
+			} // 件数更新 & 選択インデックス補正
+		} catch (Exception ex) {
+			this.Status.Value = "移動エラー: " + ex.Message;
+		}
+	}
+
+	private string EnsureUnique(string path) {
+		if (!File.Exists(path)) {
+			return path;
+		}
+
+		var dir = Path.GetDirectoryName(path)!;
+		var name = Path.GetFileNameWithoutExtension(path);
+		var ext = Path.GetExtension(path);
+		var i = 1;
+		while (true) {
+			var candidate = Path.Combine(dir, $"{name}({i}){ext}");
+			if (!File.Exists(candidate)) {
+				return candidate;
+			}
+
+			i++;
+		}
 	}
 }

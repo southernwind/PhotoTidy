@@ -34,8 +34,11 @@
                 <TextBlock Text="タグ定義 (ショートカット用候補)" FontWeight="SemiBold" />
             </Expander.Header>
             <StackPanel Spacing="8" Padding="4">
-                <Button Content="行を追加" HorizontalAlignment="Left" Command="{x:Bind ViewModel.AddTagDefinitionCommand}" />
-                <ItemsControl ItemsSource="{x:Bind ViewModel.Tags}">
+				<StackPanel Orientation="Horizontal">
+		            <Button Content="行を追加" HorizontalAlignment="Left" Command="{x:Bind ViewModel.AddTagDefinitionCommand}" />
+					<Button Content="移動" Width="72" Command="{x:Bind ViewModel.MoveFilesCommand}" />
+				</StackPanel>
+				<ItemsControl ItemsSource="{x:Bind ViewModel.Tags}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="models:TagInfo">
                             <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
@@ -47,8 +50,8 @@
                                          KeyDown="TagKeyTextBox_KeyDown"/>
                                 <TextBox Width="160" PlaceholderText="タグ名" Text="{x:Bind Name.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                                 <TextBox Width="260" IsReadOnly="True" PlaceholderText="ターゲットフォルダ" Text="{x:Bind TargetFolder.Value, Mode=OneWay}"/>
-                                <Button Content="…" Width="32" Click="TargetFolderBrowseButton_Click" />
-                            </StackPanel>
+								<Button Content="…" Width="32" Click="TargetFolderBrowseButton_Click" />
+							</StackPanel>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>

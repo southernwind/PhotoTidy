@@ -28,6 +28,7 @@ public sealed class MainViewModel {
 
 		this.Tags = tagList.Tags.ToNotifyCollectionChanged();
 		this.AddTagDefinitionCommand.Subscribe(_ => tagList.AddTagRow());
+		this.MoveFilesCommand.Subscribe(_ => imageList.MoveImagesByTag());
 	}
 
 	public NotifyCollectionChangedSynchronizedViewList<TagInfo> Tags {
@@ -35,6 +36,10 @@ public sealed class MainViewModel {
 	}
 
 	public ReactiveCommand AddTagDefinitionCommand {
+		get;
+	} = new();
+
+	public ReactiveCommand MoveFilesCommand {
 		get;
 	} = new();
 
