@@ -147,11 +147,11 @@ public class ImageList {
 				return; // 二重確認
 			}
 
-		var item = new ImageItem(e.FullPath);
-		this.Images.Add(item);
-		_ = item.EnsureThumbnailAsync();
-		this.Status.Value = $"{this.Images.Count} 件";
-	}
+			var item = new ImageItem(e.FullPath);
+			this.Images.Add(item);
+			_ = item.EnsureThumbnailAsync();
+			this.Status.Value = $"{this.Images.Count} 件";
+		}
 
 		if (SynchronizationContext.Current == this._uiContext) {
 			try {
@@ -180,7 +180,7 @@ public class ImageList {
 			return;
 		}
 
-		var next = (this.SelectedIndex.Value + 1) % this.Images.Count;
+		var next = Math.Min(this.SelectedIndex.Value + 1, this.Images.Count - 1);
 		this.SelectedIndex.Value = next;
 	}
 
@@ -189,7 +189,7 @@ public class ImageList {
 			return;
 		}
 
-		var prev = (this.SelectedIndex.Value - 1 + this.Images.Count) % this.Images.Count;
+		var prev = Math.Max(this.SelectedIndex.Value - 1, 0);
 		this.SelectedIndex.Value = prev;
 	}
 
