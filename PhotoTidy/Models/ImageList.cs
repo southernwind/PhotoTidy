@@ -1,4 +1,5 @@
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using PhotoTidy.Services;
 
@@ -8,6 +9,7 @@ namespace PhotoTidy.Models;
 public class ImageList {
 	private static readonly string[] ImageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tif", ".tiff", ".webp"];
 	private readonly IFolderPickerService _folderPickerService;
+	private readonly SynchronizationContext _uiContext; // UI スレッド同期コンテキスト (非 null 前提)
 	private FileSystemWatcher? _watcher;
 
 	/// <summary>
@@ -16,6 +18,8 @@ public class ImageList {
 	/// <param name="folderPickerService">フォルダ選択サービス。</param>
 	public ImageList(IFolderPickerService folderPickerService) {
 		this._folderPickerService = folderPickerService;
+		// UI スレッドで生成される前提。取得できない場合は開発時に気づけるよう例外。
+		this._uiContext = SynchronizationContext.Current ?? throw new InvalidOperationException("UI SynchronizationContext が利用できません");
 		this.SelectedImage = this.SelectedIndex
 			.Select(i => i >= 0 && i < this.Images.Count ? this.Images[i] : null)
 			.ToReadOnlyReactiveProperty();
@@ -108,6 +112,7 @@ public class ImageList {
 		try {
 			this._watcher = new(this.FolderPath.Value!) { IncludeSubdirectories = false, Filter = "*.*", NotifyFilter = NotifyFilters.FileName | NotifyFilters.CreationTime };
 			this._watcher.Created += this.OnFileCreated;
+			this._watcher.Renamed += this.OnFileCreated; // .tmp -> 画像拡張子 対応 (追加のみ)
 			this._watcher.EnableRaisingEvents = true;
 		} catch {
 			// ignore watcher setup failures
@@ -117,6 +122,7 @@ public class ImageList {
 	private void DisposeWatcher() {
 		if (this._watcher != null) {
 			this._watcher.Created -= this.OnFileCreated;
+			this._watcher.Renamed -= this.OnFileCreated;
 			this._watcher.Dispose();
 			this._watcher = null;
 		}
@@ -132,15 +138,36 @@ public class ImageList {
 			return;
 		}
 
-		// これはスレッドセーフと見なされます
 		if (!File.Exists(e.FullPath)) {
 			return;
 		}
+
+		void AddCore() {
+			if (!File.Exists(e.FullPath)) {
+				return; // 二重確認
+			}
 
 		var item = new ImageItem(e.FullPath);
 		this.Images.Add(item);
 		_ = item.EnsureThumbnailAsync();
 		this.Status.Value = $"{this.Images.Count} 件";
+	}
+
+		if (SynchronizationContext.Current == this._uiContext) {
+			try {
+				AddCore();
+			} catch (Exception ex) {
+				this.Status.Value = "追加エラー: " + ex.Message;
+			}
+		} else {
+			this._uiContext.Post(_ => {
+				try {
+					AddCore();
+				} catch (Exception ex) {
+					this.Status.Value = "追加エラー: " + ex.Message;
+				}
+			}, null);
+		}
 	}
 
 	private bool IsTargetImage(string path) {
