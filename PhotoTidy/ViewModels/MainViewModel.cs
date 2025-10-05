@@ -12,7 +12,7 @@ public sealed class MainViewModel {
 	///     <see cref="MainViewModel" /> クラスの新しいインスタンスを初期化します。
 	/// </summary>
 	/// <param name="imageList">イメージリストモデル</param>
-	public MainViewModel(ImageList imageList) {
+	public MainViewModel(ImageList imageList, TagList tagList) {
 		this.Images = imageList.Images.ToNotifyCollectionChanged(x => new ImageItemViewModel(x));
 		this.FolderPath = imageList.FolderPath.ToBindableReactiveProperty();
 		this.Status = imageList.Status.ToBindableReactiveProperty();
@@ -25,7 +25,18 @@ public sealed class MainViewModel {
 		this.SelectedIndex.Subscribe(x => {
 			imageList.SelectedIndex.Value = x;
 		});
+
+		this.Tags = tagList.Tags.ToNotifyCollectionChanged();
+		this.AddTagDefinitionCommand.Subscribe(_ => tagList.AddTagRow());
 	}
+
+	public NotifyCollectionChangedSynchronizedViewList<TagInfo> Tags {
+		get;
+	}
+
+	public ReactiveCommand AddTagDefinitionCommand {
+		get;
+	} = new();
 
 	/// <summary>
 	///     表示対象の画像アイテム集合を取得します。

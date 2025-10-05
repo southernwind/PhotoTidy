@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Windows.System;
 using PhotoTidy.Models;
 
@@ -8,16 +7,7 @@ namespace PhotoTidy.Services;
 ///     タグショートカットの登録と適用を司るサービス。
 /// </summary>
 [AddSingleton]
-public sealed class TagShortcutService {
-	private readonly Dictionary<VirtualKey, TagInfo> _map = new();
-
-	/// <summary>
-	///     ショートカットを登録/上書きします。
-	/// </summary>
-	public void Register(VirtualKey key, string keyName, string tagName, string? targetFolder = null) {
-		this._map[key] = new(keyName, tagName, targetFolder);
-	}
-
+public sealed class TagShortcutService(TagList tagList) {
 	/// <summary>
 	///     指定キーのタグを対象画像へ適用します。
 	/// </summary>
@@ -26,17 +16,11 @@ public sealed class TagShortcutService {
 			return;
 		}
 
-		if (!this._map.TryGetValue(key, out var tag)) {
+		var tag = tagList.Tags.FirstOrDefault(x => x.Key.Value == key);
+		if (tag == null) {
 			return;
 		}
 
 		item.Tag.Value = tag;
-	}
-
-	/// <summary>
-	///     登録済みショートカットの列挙。
-	/// </summary>
-	public IEnumerable<(VirtualKey Key, TagInfo Tag)> Enumerate() {
-		return this._map.Select(kv => (kv.Key, kv.Value));
 	}
 }

@@ -1,13 +1,12 @@
-<?xml version="1.0" encoding="utf-8"?>
 <Window
     x:Class="PhotoTidy.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:PhotoTidy"
-    xmlns:models="using:PhotoTidy.Models"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:PhotoTidy.ViewModels"
+    xmlns:models="using:PhotoTidy.Models"
     mc:Ignorable="d"
     Title="PhotoTidy">
 
@@ -17,6 +16,7 @@
 
     <Grid x:Name="RootGrid" RowSpacing="8" ColumnSpacing="8" Padding="12">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
@@ -29,10 +29,35 @@
             <TextBlock Margin="12,0,0,0" VerticalAlignment="Center" Foreground="Gray" Text="{x:Bind ViewModel.Status.Value}"/>
         </StackPanel>
 
-        <!-- Image list -->
+        <Expander Grid.Row="1" HorizontalAlignment="Stretch">
+            <Expander.Header>
+                <TextBlock Text="タグ定義 (ショートカット用候補)" FontWeight="SemiBold" />
+            </Expander.Header>
+            <StackPanel Spacing="8" Padding="4">
+                <Button Content="行を追加" HorizontalAlignment="Left" Command="{x:Bind ViewModel.AddTagDefinitionCommand}" />
+                <ItemsControl ItemsSource="{x:Bind ViewModel.Tags}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="models:TagInfo">
+                            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                <!-- Key capture textbox: press key to assign, Delete/Backspace to clear -->
+                                <TextBox Width="140"
+                                         PlaceholderText="キー"
+                                         IsReadOnly="True"
+                                         Text="{x:Bind Key.Value, Mode=OneWay}"
+                                         KeyDown="TagKeyTextBox_KeyDown"/>
+                                <TextBox Width="160" PlaceholderText="タグ名" Text="{x:Bind Name.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBox Width="260" IsReadOnly="True" PlaceholderText="ターゲットフォルダ" Text="{x:Bind TargetFolder.Value, Mode=OneWay}"/>
+                                <Button Content="…" Width="32" Click="TargetFolderBrowseButton_Click" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </Expander>
+
         <GridView
             x:Name="ImagesGrid"
-            Grid.Row="1"
+            Grid.Row="2"
             IsItemClickEnabled="True"
             SelectionMode="Single"
             ItemsSource="{x:Bind ViewModel.Images}"
@@ -48,8 +73,8 @@
                         <Border CornerRadius="4" BorderBrush="#33000000" BorderThickness="1">
                             <Grid>
                                 <Image Source="{x:Bind Thumbnail.Value, Mode=OneWay}" Stretch="UniformToFill" Width="160" Height="110" />
-                                <Border x:Name="TagBadge" x:Load="{x:Bind IsTagged.Value}" Background="#AA000000" Padding="4" HorizontalAlignment="Right" VerticalAlignment="Top" CornerRadius="0,0,0,4">
-                                    <TextBlock Text="{x:Bind TagName.Value}" Foreground="White" FontSize="10"/>
+                                <Border x:Name="TagBadge" x:Load="{x:Bind IsTagged.Value,Mode=OneWay}" Background="#AA000000" Padding="4" HorizontalAlignment="Right" VerticalAlignment="Top" CornerRadius="0,0,0,4">
+                                    <TextBlock Text="{x:Bind Tag.Value.Name.Value,Mode=OneWay}" Foreground="White" FontSize="16"/>
                                 </Border>
                             </Grid>
                         </Border>
