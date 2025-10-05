@@ -17,7 +17,7 @@ public sealed class ImageItem {
 	/// <param name="filePath">画像ファイルの絶対パス。</param>
 	public ImageItem(string filePath) {
 		this.FilePath.Value = filePath;
-		this.FileName = this.FilePath.ToReadOnlyReactiveProperty(Path.GetFileName(filePath));
+		this.FileName = this.FilePath.Select(Path.GetFileName).ToReadOnlyReactiveProperty()!;
 	}
 
 	/// <summary>
